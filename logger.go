@@ -2,7 +2,6 @@ package log
 
 import (
 	"context"
-	"sync/atomic"
 )
 
 // Logger is the high-level, backend-agnostic logging abstraction. Business code
@@ -33,28 +32,26 @@ type loggerWithContext interface {
 	ErrorContext(ctx context.Context, err error, msg string, fields ...Field)
 }
 
-// defaultLogger holds the package-level default. It is an atomic pointer so
-// reads via Default() are lock-free on the hot path while SetDefault stays safe
-// for concurrent use. A *Logger is stored (rather than the interface directly)
+// defaultLogger holds the package-level default. A *Logger is stored (rather than the interface directly)
 // so swapping in any concrete implementation never panics.
-var defaultLogger atomic.Pointer[Logger]
+// Should not use concurrent.
+var defaultLogger Logger
 
 func init() {
-	l := New(Config{})
-	defaultLogger.Store(&l)
+	defaultLogger = New(Config{})
 }
 
 // SetDefault replaces the package-level default logger. It is safe to call
 // concurrently with Default and the package-level logging helpers.
 func SetDefault(l Logger) {
 	if l != nil {
-		defaultLogger.Store(&l)
+		defaultLogger = l
 	}
 }
 
 // Default returns the package-level default logger. The read is lock-free.
 func Default() Logger {
-	return *defaultLogger.Load()
+	return defaultLogger
 }
 
 // Package-level convenience wrappers around the default logger.
