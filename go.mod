@@ -1,4 +1,4 @@
-module gogokit/log
+module github.com/gogo-kit/log
 
 go 1.18
 

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gogokit/log"
+	"github.com/gogo-kit/log"
 )
 
 func newTestLogger(buf *bytes.Buffer) log.Logger {
