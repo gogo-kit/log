@@ -50,7 +50,7 @@ func TestDefaultConcurrentAccess(t *testing.T) {
 	SetDefault(newTestLogger(&buf))
 
 	var wg sync.WaitGroup
-	for range 50 {
+	for i := 0; i < 50; i++ {
 		wg.Add(2)
 		go func() { defer wg.Done(); Info("concurrent") }()
 		go func() { defer wg.Done(); SetDefault(newTestLogger(&bytes.Buffer{})) }()

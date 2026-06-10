@@ -1,16 +1,21 @@
 package log
 
-// Standard field keys that make up the ELK logging contract. Centralizing them
-// keeps the schema in one place: rename or add a key here and every producer
-// (field constructors, formatter, middleware) follows.
+// Mandatory contract keys, stamped on every event by the Driver. They are
+// exported because a Driver in another module (e.g. logzap) needs them by name
+// to configure its encoder. Resolve the effective name with DriverOptions.Key.
 const (
-	// Mandatory on every event.
-	keyTimestamp   = "timestamp"
-	keyLevel       = "level"
-	keyService     = "service"
-	keyEnvironment = "environment"
-	keyMessage     = "message"
+	KeyTimestamp   = "timestamp"
+	KeyLevel       = "level"
+	KeyService     = "service"
+	KeyEnvironment = "environment"
+	KeyMessage     = "message"
+)
 
+// Data field keys produced by the core (field constructors, error enrichment,
+// request logging). They flow through the event map by value, so drivers never
+// reference them by name and they stay unexported. Centralizing them keeps the
+// schema in one place.
+const (
 	// Correlation / business context.
 	keyRequestID  = "request_id"
 	keyUserID     = "user_id"
@@ -78,11 +83,11 @@ func (k Keys) rename() map[string]string {
 			m[canonical] = custom
 		}
 	}
-	add(keyTimestamp, k.Timestamp)
-	add(keyLevel, k.Level)
-	add(keyService, k.Service)
-	add(keyEnvironment, k.Environment)
-	add(keyMessage, k.Message)
+	add(KeyTimestamp, k.Timestamp)
+	add(KeyLevel, k.Level)
+	add(KeyService, k.Service)
+	add(KeyEnvironment, k.Environment)
+	add(KeyMessage, k.Message)
 	add(keyRequestID, k.RequestID)
 	add(keyUserID, k.UserID)
 	add(keyEvent, k.Event)

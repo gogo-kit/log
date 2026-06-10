@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/trtuandat98/gkit/log"
+	"gogokit/log"
 )
 
 func charge() error { return log.Wrap(errors.New("gateway timeout")) }

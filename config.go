@@ -3,8 +3,6 @@ package log
 import (
 	"io"
 	"os"
-
-	"github.com/sirupsen/logrus"
 )
 
 // Level is the minimum severity a logger will emit.
@@ -16,19 +14,6 @@ const (
 	WarnLevel
 	ErrorLevel
 )
-
-func (l Level) toLogrus() logrus.Level {
-	switch l {
-	case DebugLevel:
-		return logrus.DebugLevel
-	case WarnLevel:
-		return logrus.WarnLevel
-	case ErrorLevel:
-		return logrus.ErrorLevel
-	default:
-		return logrus.InfoLevel
-	}
-}
 
 // Config controls construction of a Logger. The zero value is usable: it logs
 // at INFO to stdout and reads the environment from APP_ENV.
@@ -64,7 +49,7 @@ func New(cfg Config) Logger {
 
 	factory := cfg.Driver
 	if factory == nil {
-		factory = LogrusDriver
+		factory = JSONDriver
 	}
 
 	driver := factory(DriverOptions{

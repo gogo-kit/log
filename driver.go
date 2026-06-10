@@ -44,9 +44,9 @@ type DriverOptions struct {
 	Rename      map[string]string
 }
 
-// key resolves a canonical contract key to its configured output name. Drivers
+// Key resolves a canonical contract key to its configured output name. Drivers
 // use it when stamping mandatory fields and renaming event data.
-func (o DriverOptions) key(canonical string) string {
+func (o DriverOptions) Key(canonical string) string {
 	if effective, ok := o.Rename[canonical]; ok {
 		return effective
 	}

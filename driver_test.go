@@ -61,7 +61,7 @@ func TestCustomDriverReceivesEnrichedEvent(t *testing.T) {
 	assert.NotEmpty(t, e.fields[keyStackTrace])
 
 	// Key renames are passed through to the driver via options, not pre-applied.
-	assert.Equal(t, "error", d.opts.key(keyErrorMessage))
+	assert.Equal(t, "error", d.opts.Key(keyErrorMessage))
 	assert.Equal(t, "test", d.opts.Environment)
 }
 

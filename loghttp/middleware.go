@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/trtuandat98/gkit/log"
+	"gogokit/log"
 )
 
 // Middleware returns net/http middleware that logs each request and enriches
