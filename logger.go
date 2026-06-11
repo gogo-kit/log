@@ -2,6 +2,7 @@ package log
 
 import (
 	"context"
+	"sync/atomic"
 )
 
 // Logger is the high-level, backend-agnostic logging abstraction. Business code
@@ -32,26 +33,28 @@ type loggerWithContext interface {
 	ErrorContext(ctx context.Context, err error, msg string, fields ...Field)
 }
 
-// defaultLogger holds the package-level default. A *Logger is stored (rather than the interface directly)
-// so swapping in any concrete implementation never panics.
-// Should not use concurrent.
-var defaultLogger Logger
+// loggerHolder wraps the Logger interface so the concrete type stored in the
+// atomic.Value is always loggerHolder. Storing the interface directly would
+// panic when callers swap in different concrete implementations.
+type loggerHolder struct{ Logger }
+
+// defaultLogger holds the package-level default. atomic.Value gives lock-free
+// reads and allows SetDefault to be called concurrently with itself.
+var defaultLogger atomic.Value
 
 func init() {
-	defaultLogger = New(Config{})
+	defaultLogger.Store(loggerHolder{New(Config{})})
 }
 
 // SetDefault replaces the package-level default logger. It is safe to call
-// concurrently with Default and the package-level logging helpers.
+// concurrently; the most recent store wins.
 func SetDefault(l Logger) {
-	if l != nil {
-		defaultLogger = l
-	}
+	defaultLogger.Store(loggerHolder{l})
 }
 
 // Default returns the package-level default logger. The read is lock-free.
 func Default() Logger {
-	return defaultLogger
+	return defaultLogger.Load().(loggerHolder).Logger
 }
 
 // Package-level convenience wrappers around the default logger.

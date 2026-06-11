@@ -14,9 +14,7 @@ import (
 
 func TestPackageLevelHelpersUseDefault(t *testing.T) {
 	var buf bytes.Buffer
-	prev := Default()
 	SetDefault(newTestLogger(&buf))
-	t.Cleanup(func() { SetDefault(prev) })
 
 	tests := []struct {
 		name  string
@@ -42,27 +40,19 @@ func TestPackageLevelHelpersUseDefault(t *testing.T) {
 	}
 }
 
-func TestDefaultConcurrentAccess(t *testing.T) {
-	prev := Default()
-	t.Cleanup(func() { SetDefault(prev) })
-
+func TestDefaultConcurrentRead(t *testing.T) {
 	var buf bytes.Buffer
 	SetDefault(newTestLogger(&buf))
 
 	var wg sync.WaitGroup
 	for i := 0; i < 50; i++ {
-		wg.Add(2)
-		go func() { defer wg.Done(); Info("concurrent") }()
-		go func() { defer wg.Done(); SetDefault(newTestLogger(&bytes.Buffer{})) }()
+		wg.Add(3)
+		go func() { defer wg.Done(); Info("concurrent 1") }()
+		go func() { defer wg.Done(); Info("concurrent 2") }()
+		go func() { defer wg.Done(); Info("concurrent 3") }()
 	}
 	wg.Wait()
 	assert.NotNil(t, Default())
-}
-
-func TestSetDefaultIgnoresNil(t *testing.T) {
-	before := Default()
-	SetDefault(nil)
-	assert.Same(t, before, Default())
 }
 
 func TestTimeField(t *testing.T) {

@@ -87,9 +87,7 @@ func TestContextMethodExplicitFieldWins(t *testing.T) {
 
 func TestPackageLevelContextHelper(t *testing.T) {
 	var buf bytes.Buffer
-	prev := Default()
 	SetDefault(newTestLogger(&buf))
-	t.Cleanup(func() { SetDefault(prev) })
 
 	InfoContext(WithRequestID(context.Background(), "req-pkg"), "hello")
 

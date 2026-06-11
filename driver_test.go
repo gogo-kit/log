@@ -79,9 +79,7 @@ func TestDisabledLevelSkipsWriteAndStackCapture(t *testing.T) {
 
 func TestPackageSyncDelegatesToDriver(t *testing.T) {
 	d := &captureDriver{}
-	prev := Default()
 	SetDefault(New(Config{Driver: newCaptureFactory(d)}))
-	t.Cleanup(func() { SetDefault(prev) })
 
 	require.NoError(t, Sync())
 	assert.True(t, d.synced)
